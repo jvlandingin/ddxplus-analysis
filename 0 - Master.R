@@ -1,7 +1,7 @@
 
 # Setup ---------------------------------------------------------------
 
-source("1 - Libraries.R")
+source("1 - Libraries and Functions.R")
 theme_set(theme_classic())
 
 # Import Data -------------------------------------------------------------
@@ -9,8 +9,12 @@ theme_set(theme_classic())
 
 # source("2 - Data import and preprocessing.R")
 # release_train_patients <- readr::read_rds(file = here("data","raw","release_train_patients.Rds"))
-conditions_tibble <- readr::read_rds(file = here("data","processed","conditions_tibble.Rds"))
-
+conditions_tibble <-
+  readr::read_rds(file = here("data","processed","conditions_tibble.Rds"))
+evidences_tibble <- 
+  readr::read_rds(file = here("data",
+                              "processed",
+                              "evidences_tibble.Rds"))
 
 # Feature engineering ---------------------------------------------------------
 
@@ -19,7 +23,6 @@ conditions_tibble <- readr::read_rds(file = here("data","processed","conditions_
 # read
 
 training_data <- readr::read_rds(file = here("data", "processed", "training.Rds"))
-
-
+  
 
 

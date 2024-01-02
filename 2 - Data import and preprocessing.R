@@ -6,10 +6,14 @@ ddxplus_data_location <- here("data","raw","DDXPlus")
 release_train_patients_raw <- read_csv(file  = here(ddxplus_data_location,
                                                     "release_train_patients.csv"))
 
-release_train_patients <- release_train_patients_raw
+# Add patient Id
+release_train_patients <- release_train_patients_raw %>% 
+  mutate(patientId = 1:nrow(.), .before = AGE)
 
-# readr::write_rds(x = release_train_patients,
-#                  file = here("data","raw","release_train_patients.Rds"))
+# readr::write_rds(release_train_patients,
+#                  file = here("data","processed","release_train_patients_raw.Rds"))
+
+
 rm(release_train_patients_raw)
 
 # 2. Release evidences
@@ -51,6 +55,8 @@ evidences_tibble_raw <- tibble(name = unlist(output[[1]]),
 
 evidences_tibble <- bind_cols(evidences_tibble_raw, pos_values)
 
+readr::write_rds(evidences_tibble,
+                 file = here("data","processed","evidences_tibble.Rds"))
 
 
 rm(evidences_json, evidence_names, evidences_questions, extract_vector,
@@ -102,15 +108,6 @@ release_train_patients_eng <- release_train_patients %>%
 
 diff_diag <- release_train_patients$DIFFERENTIAL_DIAGNOSIS
 
-diff_diag[1]
-test <- diff_diag[10]
-stringr::str_replace_all(
-  "Lupus érythémateux disséminé (LED)",
-  setNames(
-    fixed(conditions_translate_helper$cond_name_eng),
-    conditions_translate_helper$PATHOLOGY)
-)
-
 plan(multisession, workers = 8)
 diff_diag_eng <- future_map_chr(
   diff_diag,
@@ -128,9 +125,20 @@ diff_diag_eng <- future_map_chr(
 
 release_train_patients_eng$DIFFERENTIAL_DIAGNOSIS <- diff_diag_eng
 
-# readr::write_rds(x = release_train_patients_eng,
-#                  file = here("data","processed","release_train_patients_eng.Rds"))
+ddxplus_training_2 <- release_train_patients_eng
 
+# 3. Add patient Id to data
+# ddxplus_training_2 <- ddxplus_training_2 %>% 
+#   mutate(patientId = 1:nrow(.), .before = AGE)
+
+# readr::write_rds(x = ddxplus_training_2,
+#                  file = here("data","processed","ddxplus_training_2.Rds"))
+
+rm(diff_diag_eng,
+   release_train_patients,
+   conditions_translate_helper, 
+   release_train_patients_eng,
+   ddxplus_data_location)
 
 
 
